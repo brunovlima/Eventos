@@ -8,6 +8,7 @@ namespace ProEventos.API.Controllers
     [ApiController]
     [Route("Evento")]
     public class EventoController : ControllerBase
+    
     {
         private readonly DataContext _context;
 
