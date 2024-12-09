@@ -1,17 +1,28 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-
-string[] summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+using ProEventos.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adicionar serviços ao contêiner.
 builder.Services.AddControllers();
+
+// Configuração de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
+// Configuração do banco de dados
+builder.Services.AddDbContext<DataContext>( 
+    options => options.UseSqlite(builder.Configuration.GetConnectionString("Default"))
+);
 
 // Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -21,9 +32,6 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-
-// Configurar a porta de redirecionamento HTTPS
-app.Urls.Add("https://localhost:7251");
 
 if (app.Environment.IsDevelopment())
 {
@@ -36,13 +44,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
-
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
-
-app.MapControllers();  // Certifique-se de adicionar esta linha para mapear os controladores
-
+app.MapControllers();
 app.Run();
-
-

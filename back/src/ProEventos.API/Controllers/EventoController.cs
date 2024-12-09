@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc; 
-using ProEventos.API.Models; 
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using ProEventos.API.Data;
+using ProEventos.API.Models;
 using System.Linq;
 
 namespace ProEventos.API.Controllers
@@ -9,40 +9,24 @@ namespace ProEventos.API.Controllers
     [Route("Evento")]
     public class EventoController : ControllerBase
     {
-        private List<Evento> eventos = new List<Evento>
+        private readonly DataContext _context;
+
+        public EventoController(DataContext context)
         {
-            new Evento
-            {
-                EventoId = 1,
-                Tema = "Angular",
-                Local = "Belo Horizonte",
-                Lote = "1º Lote",
-                QtdPessoas = 250,
-                DataEvento = DateTime.Now.AddDays(2).ToString(),
-                ImagemURL = "foto.jpg"
-            },
-            new Evento
-            {
-                EventoId = 2,
-                Tema = "Angular e .NET",
-                Local = "São Paulo",
-                Lote = "1º Lote",
-                QtdPessoas = 250,
-                DataEvento = DateTime.Now.AddDays(3).ToString(),
-                ImagemURL = "foto2.jpg"
-            }
-        };
+            _context = context;
+        }
 
         [HttpGet]
         public IActionResult Get()
         {
+            var eventos = _context.Eventos.ToList();
             return Ok(eventos);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var evento = eventos.FirstOrDefault(e => e.EventoId == id);
+            var evento = _context.Eventos.FirstOrDefault(e => e.EventoId == id);
             if (evento == null)
             {
                 return NotFound("Evento não encontrado");
@@ -51,21 +35,45 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post()
+        public IActionResult Post([FromBody] Evento evento)
         {
-            return Ok("exemplo de post");
+            _context.Eventos.Add(evento);
+            _context.SaveChanges();
+            return Ok(evento);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id)
+        public IActionResult Put(int id, [FromBody] Evento eventoAtualizado)
         {
-            return Ok($"exemplo de put com id = {id}");
+            var evento = _context.Eventos.FirstOrDefault(e => e.EventoId == id);
+            if (evento == null)
+            {
+                return NotFound("Evento não encontrado");
+            }
+
+            evento.Tema = eventoAtualizado.Tema;
+            evento.Local = eventoAtualizado.Local;
+            evento.DataEvento = eventoAtualizado.DataEvento;
+            evento.QtdPessoas = eventoAtualizado.QtdPessoas;
+            evento.Lote = eventoAtualizado.Lote;
+            evento.ImagemURL = eventoAtualizado.ImagemURL;
+
+            _context.SaveChanges();
+            return Ok(evento);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            return Ok($"exemplo de delete com id = {id}");
+            var evento = _context.Eventos.FirstOrDefault(e => e.EventoId == id);
+            if (evento == null)
+            {
+                return NotFound("Evento não encontrado");
+            }
+
+            _context.Eventos.Remove(evento);
+            _context.SaveChanges();
+            return Ok("Evento removido com sucesso");
         }
     }
 }
