@@ -3,14 +3,14 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-eventos',
   templateUrl: './eventos.component.html',
-  styleUrl: './eventos.component.scss'
+  styleUrls: ['./eventos.component.scss']
 })
 export class EventosComponent implements OnInit {
 
-  // PRorpiedades
+  // Propriedades
   eventos: any = []
 
-  // Ijetores
+  // Injetores
   constructor() {}
 
   // Inicialização
@@ -19,22 +19,11 @@ export class EventosComponent implements OnInit {
   }
 
   // Métodos
-  getEventos(): void{
-
+  getEventos(): void {
     this.eventos = [
-      {
-        Tema: 'Angular',
-        Local: 'Belo Horizonte'
-      },
-      {
-        Tema: 'React',
-        Local: 'São Paulo'
-      },
-      {
-        Tema: 'Vue',
-        Local: 'Rio de Janeiro'
-      }
-    ]
+      { Tema: 'Angular', Local: 'Belo Horizonte' },
+      { Tema: 'React', Local: 'São Paulo' },
+      { Tema: 'Vue', Local: 'Rio de Janeiro' }
+    ];
   }
 }
-
