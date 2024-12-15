@@ -7,7 +7,7 @@ import { EventosComponent } from './eventos/eventos.component';
 import { PalestrantesComponent } from './palestrantes/palestrantes.component';
 
 @NgModule({
-  declarations: [	
+  declarations: [
     AppComponent,
     EventosComponent,
       PalestrantesComponent
